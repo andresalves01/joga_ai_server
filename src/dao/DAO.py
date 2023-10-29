@@ -39,7 +39,9 @@ class DAO:
         self.connection.commit()
         try:
             return self.cursor.fetchone()[0]
-        except (Exception, pg.DatabaseError):
+        except (Exception, pg.DatabaseError) as error:
+            self.connection.rollback()
+            print(error)
             return None
 
     def read_with_condition(
@@ -83,6 +85,7 @@ class DAO:
             self.connection.commit()
             return True
         except (Exception, pg.DatabaseError) as error:
+            self.connection.rollback()
             print(error)
             return False
 
@@ -94,6 +97,7 @@ class DAO:
             self.connection.commit()
             return True
         except (Exception, pg.DatabaseError) as error:
+            self.connection.rollback()
             print(error)
             return False
 
@@ -104,6 +108,7 @@ class DAO:
             self.connection.commit()
             return True
         except (Exception, pg.DatabaseError) as error:
+            self.connection.rollback()
             print(error)
             return False
 
@@ -118,6 +123,7 @@ class DAO:
             self.connection.commit()
             return True
         except (Exception, pg.DatabaseError) as error:
+            self.connection.rollback()
             print(error)
             return False
 
@@ -130,6 +136,7 @@ class DAO:
             self.connection.commit()
             return True
         except (Exception, pg.DatabaseError) as error:
+            self.connection.rollback()
             print(error)
             return False
 
