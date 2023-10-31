@@ -1,6 +1,6 @@
 # Joga Ai - A Soccer Court Booking App
 
-Joga Ai (in english would be something close to "Play There") is a Flask-based backend for a soccer court booking application that allows users to find and reserve soccer courts in their region, similar to how Airbnb handles property rentals. Additionally, this backend offers a integration for court owners who wish to manage their court bookings.
+Joga Ai (in English would be something close to "Play There") is a Flask-based backend for a soccer court booking application that allows users to find and reserve soccer courts in their region, similar to how Airbnb handles property rentals. Additionally, this backend offers a integration for court owners who wish to manage their court bookings.
 
 This README provides an overview of the project, its features, and instructions on how to set it up and use it.
 
@@ -9,9 +9,11 @@ This README provides an overview of the project, its features, and instructions 
 - [Features](#features)
 - [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-- [Usage](#usage)
+  - [Installation and Usage](#installation-and-usage)
+- [Tables and Objects](#tables-and-objects)
 - [API Documentation](#api-documentation)
+  - [Methods](#general-methods)
+  - [Specific Requisitions](#specific-requisitions)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -21,6 +23,8 @@ This README provides an overview of the project, its features, and instructions 
 - **Search and Filter:** Users can search for soccer courts based on location, amenities, rating, price and availability.
 - **Booking Management:** Users can view, manage and delete their court bookings.
 - **Reviews and Ratings:** Users can leave reviews and ratings of courts after bookings.
+
+- **Court Creation:** Court owners can register their properties for rental.
 
 ## Getting Started
 
@@ -39,9 +43,10 @@ Nevertheless, if you prefer to set up and run Joga Ai on your local development 
 - [Unidecode 1.3.7](https://pypi.org/project/Unidecode/)
 - [Virtualenv](https://virtualenv.pypa.io/en/latest/) (recommended)
 
-### Installation
+### Installation and Usage
 
-If you have docker installed, you can pull this repository as a docker image and run it, without the need to individually install each component of the necessary environment.
+#### Docker
+If you have docker installed, you can pull this repository as a docker image and run it, without the need to individually install each dependence individually.
 
 Pull the image:
 ```bash
@@ -55,6 +60,8 @@ docker run -p 5000:5000 --name joga_ai andrealves01/joga_ai
 
 Now you can access it with the URL http://localhost:5000/.
 
+
+#### Git Clone
 If you prefer to manually install the packages, you can clone this repository using
 ```bash
 git clone https://github.com/andresalves01/joga_ai_server.git
@@ -87,9 +94,42 @@ gunicorn --bind 0.0.0.0:5000 app:app
 
 And you are all set.
 
-### API Documentation
+## API Documentation
 
+This backend uses JSON-based RESTful APIs to communicate with clients and associate applications. Therefore, use POST to create objects, GET to read them, PUT to update and DELETE to erase data.
 
+### Methods
+#### POST
+POST requests are responded with an id and a message to indicate success or failure of the requested operation.
 
+Example of a Court row creation:
+
+**Post Request Body**
+```json
+{
+  "name": "MyCourt",
+  "description": "This is a text",
+  "player_qty": 10, // Should be between 2 and 22
+  "modality": "soccer",
+  "rating": 5.0, // Will not affect object creation
+  "address_id": null
+}
+```
+
+**Success Response**
+```json
+{
+  "id":1,
+  "message": "Court row successfully created."
+}
+```
+#### GET
+TODO
+
+#### PUT
+TODO
+
+#### DELETE
+TODO
 
 

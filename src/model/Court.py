@@ -86,7 +86,7 @@ class Court(Model_ID):
 
     @rating.setter
     def rating(self, value: float) -> None:
-        if value is None or (value >= 0.0 and value <= 5.0):
+        if value is None or value >= 0.0:
             self.__rating = value
         else:
             raise Exception("Invalid rating")
