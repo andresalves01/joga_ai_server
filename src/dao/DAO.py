@@ -27,17 +27,16 @@ class DAO:
             else:
                 print("Data Access Object is already connected.")
             return True
-        except (Exception, pg.DatabaseError) as error:
+        except (Exception, pg.DatabaseError, pg.Error) as error:
             print(error)
             return False
 
     def create(self, Model_object: Model) -> None | int:
         prepared_statement, data = Model_object.generate_sql_insert()
         print(prepared_statement, data)
-
-        self.cursor.execute(prepared_statement, data)
-        self.connection.commit()
         try:
+            self.cursor.execute(prepared_statement, data)
+            self.connection.commit()
             return self.cursor.fetchone()[0]
         except (Exception, pg.DatabaseError) as error:
             self.connection.rollback()
