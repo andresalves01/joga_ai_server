@@ -1,7 +1,7 @@
 import psycopg2 as pg
 from .config import config
 from model.Model import Model
-from model.Model_ID import Model_ID
+from model.id.Model_ID import Model_ID
 
 
 class DAO:

@@ -1,5 +1,5 @@
 from typing import Any
-from .Model import Model
+from ..Model import Model
 from typing import Any
 
 

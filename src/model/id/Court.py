@@ -1,6 +1,6 @@
 from typing import Any, Dict
 from .Model_ID import Model_ID
-from .Model import Model
+from ..Model import Model
 import re
 
 

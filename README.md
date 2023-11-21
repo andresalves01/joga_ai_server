@@ -132,4 +132,9 @@ TODO
 #### DELETE
 TODO
 
+# TODOS
+- Model_ID_Service shouldn't have a function called get_attributes, and Model shouldn't have to check the keys it gets from Model.get_attributes when generating SQL queries. All validation should be made inside of Model.get_attributes.
+- Verify if database's CHECKs are really useful, and, if not, delete them from there and from the backend.
+- Implement better exception treatment, the actual one is poorly made.
+- Separate app.py functions into other files, it is a mess right now.
 

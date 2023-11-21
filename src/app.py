@@ -1,14 +1,14 @@
 from dao.DAO import DAO
 from model.Model import Model
-from model.Address import Address
-from model.Amenity import Amenity
+from model.id.Address import Address
+from model.id.Amenity import Amenity
 from model.Court_Bookmark import Court_Bookmark
 from model.Court_has_Amenity import Court_has_Amenity
 from model.Court_Rating import Court_Rating
-from model.Court import Court
-from model.Photo import Photo
-from model.Slot import Slot
-from model.User import User
+from model.id.Court import Court
+from model.id.Photo import Photo
+from model.id.Slot import Slot
+from model.id.User import User
 
 from service.Model_Service import model_post, model_get, model_put, model_delete
 from service.Model_ID_Service import (
@@ -59,14 +59,11 @@ def search_slot() -> Response:
     if not dao.connect():
         return Response(status=503)
 
-    placeholders = (
-        Court(schema),
-        Address(schema),
-        Slot(schema),
-    )  # type(placeholdes) should be tuple[Model]
-    attributes_list = tuple(get_attributes(placeholder) for placeholder in placeholders)
+    placeholders: tuple[Model] = (Court(schema), Address(schema), Slot(schema))
 
+    attributes_list = tuple(get_attributes(placeholder) for placeholder in placeholders)
     attributes_str = tuple(get_select_str(attributes) for attributes in attributes_list)
+
     query = f"""SELECT {", ".join(attributes_str)}
         FROM joga_ai.slot
         INNER JOIN joga_ai.court ON slot.court_id = court.id

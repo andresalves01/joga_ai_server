@@ -1,5 +1,5 @@
 from flask import Request, Response, jsonify
-from model.Model_ID import Model_ID
+from model.id.Model_ID import Model_ID
 from dao.DAO import DAO
 from .Model_Service import model_post, model_get, model_put, model_delete
 
@@ -144,15 +144,13 @@ def post_referenced_and_dependent_models(
     referenced: Model_ID, dependent: Model_ID, dao: DAO, request_json: dict[str, any]
 ) -> Response:
     referenced_name = referenced.get_class_name().lower()
-    dependent_name = dependent.get_class_name().lower()
-
-    # Create the referenced model
     referenced_response = model_post(referenced, dao, request_json[referenced_name])
 
     if referenced_response.status_code == 201:
         referenced_id = referenced_response.get_json()["id"]
 
         # Add the referenced model's ID to the dependent model's request JSON
+        dependent_name = dependent.get_class_name().lower()
         dependent_request = request_json[dependent_name]
         dependent_request[f"{referenced_name}_id"] = referenced_id
 
@@ -181,8 +179,9 @@ def get_related_models(referenced: Model_ID, dependent: Model_ID, dao: DAO):
             results = []
 
             for row in rows_fetched:
-                dependent.from_fetched_row(row[: len(get_attributes(dependent))])
-                referenced.from_fetched_row(row[len(get_attributes(dependent)) :])
+                attribute_length = len(get_attributes(dependent))
+                dependent.from_fetched_row(row[:attribute_length])
+                referenced.from_fetched_row(row[attribute_length:])
 
                 dependent_json = dependent.to_json_dict()
                 dependent_json[
@@ -224,12 +223,15 @@ def get_attributes(model_id_object: Model_ID) -> list[str]:
     class_name = model_id_object.get_class_name()
     mangling_class_name = f"_{class_name}__"
 
+    class_name = class_name.lower()
+    keys = model_id_object.get_attributes().keys()
+
     attributes = [
-        f'"{class_name.lower()}".{attr.removeprefix(mangling_class_name)}'
-        for attr in model_id_object.get_attributes().keys()
+        f'"{class_name}".{attr.removeprefix(mangling_class_name)}'
+        for attr in keys
         if not attr.endswith("_")
     ]
-    attributes.append(f'"{class_name.lower()}".id')
+    attributes.append(f'"{class_name}".id')
 
     return attributes
 
