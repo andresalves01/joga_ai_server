@@ -59,7 +59,7 @@ def model_get(
             if len(objects_found) > 0:
                 # If addresses are found, populate the addresses list and message
                 response_data["objects"] = [
-                    object_found.to_json_dict() for object_found in objects_found
+                    object_found.attributes_to_dict() for object_found in objects_found
                 ]
                 response_data[
                     "message"

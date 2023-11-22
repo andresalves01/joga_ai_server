@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Any, Dict
+from typing import Any
 
 
 class Model(ABC):
@@ -13,9 +13,6 @@ class Model(ABC):
 
     def get_class_name(self) -> str:
         return self.__class__.__name__
-
-    def get_attributes(self) -> Dict[str, Any]:
-        return vars(self)
 
     def from_json(self, json_dictonary: dict[str, Any]) -> dict[str, Any]:
         used_items = {}
@@ -31,15 +28,6 @@ class Model(ABC):
         }
         return json_dictonary
 
-    def to_json_dict(self) -> dict[str, Any]:
-        dictionary = {}
-
-        private_prefix = "_" + self.get_class_name() + "__"
-        for name, attribute_value in self.__dict__.items():
-            if not name.endswith("_"):
-                dictionary[name.removeprefix(private_prefix)] = attribute_value
-        return dictionary
-
     def from_fetched_row(self, row: tuple[Any]) -> tuple[Any]:
         attributes = iter(self.__dict__.keys())
 
@@ -54,20 +42,29 @@ class Model(ABC):
         unused_elements = [x for x in row if x not in used_elements]
         return tuple(unused_elements)
 
+    def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
+        attribute_dict = vars(self)
+        mangling_name = f"_{self.get_class_name()}__"
+
+        return_dict = {}
+        for name, value in attribute_dict.items():
+            if name.endswith("_") or (ignore_None and value is None):
+                continue
+
+            name = name.removeprefix(mangling_name)
+            return_dict[name] = value
+
+        return return_dict
+
     def generate_sql_insert(self) -> tuple[str, tuple[Any, ...]]:
         sql_query = f'INSERT INTO {self.schema}."{self.get_class_name().lower()}"('
         sql_values = "VALUES ("
         values = []
 
-        attributes = self.get_attributes()
-        private_prefix = "_" + self.get_class_name() + "__"
-        for name, attribute_value in attributes.items():
-            if name.endswith("_") or attribute_value is None:
-                continue
-
-            sql_query += f"{name.removeprefix(private_prefix)}, "
+        for name, value in self.attributes_to_dict(ignore_None=True).items():
+            sql_query += f"{name}, "
             sql_values += f"%s, "
-            values.append(attribute_value)
+            values.append(value)
 
         sql_query = sql_query.removesuffix(", ") + ") "
         sql_values = sql_values.removesuffix(", ") + ");"
@@ -78,12 +75,8 @@ class Model(ABC):
     def generate_sql_select(self, condition: str) -> str:
         sql_query = "SELECT "
 
-        atrributes = self.get_attributes()
-        private_prefix = "_" + self.get_class_name() + "__"
-        for name in atrributes.keys():
-            if name.endswith("_"):
-                continue
-            sql_query += f"{name.removeprefix(private_prefix)}, "
+        for name in self.attributes_to_dict().keys():
+            sql_query += f"{name}, "
 
         sql_query = f'{sql_query.removesuffix(", ")} FROM {self.schema}."{self.get_class_name().lower()}" WHERE {condition};'
         return sql_query
@@ -92,15 +85,9 @@ class Model(ABC):
         sql_query = f'UPDATE {self.schema}."{self.get_class_name().lower()}" SET '
         values = []
 
-        attributes = self.get_attributes()
-        private_prefix = "_" + self.get_class_name() + "__"
-
-        for name, attribute_value in attributes.items():
-            if name.endswith("_"):
-                continue
-
-            sql_query += f"{name.removeprefix(private_prefix)} = %s, "
-            values.append(attribute_value)
+        for name, value in self.attributes_to_dict().items():
+            sql_query += f"{name} = %s, "
+            values.append(value)
 
         sql_query = f'{sql_query.rstrip(", ")} WHERE {condition};'
         return sql_query, tuple(values)
@@ -111,9 +98,8 @@ class Model(ABC):
 
     def __str__(self) -> str:
         return_string = f"{self.get_class_name()} {{"
-        attributes = self.get_attributes()
 
-        for name, value in attributes.items():
+        for name, value in self.attributes_to_dict().items():
             return_string += f"\n  {name} = {value}"
         return return_string + "\n}"
 

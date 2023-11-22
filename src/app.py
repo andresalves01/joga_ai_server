@@ -18,7 +18,6 @@ from service.Model_ID_Service import (
     post_and_update_id,
     post_referenced_and_dependent_models,
     get_related_models,
-    get_attributes,
     get_select_str,
 )
 
@@ -61,8 +60,16 @@ def search_slot() -> Response:
 
     placeholders: tuple[Model] = (Court(schema), Address(schema), Slot(schema))
 
-    attributes_list = tuple(get_attributes(placeholder) for placeholder in placeholders)
-    attributes_str = tuple(get_select_str(attributes) for attributes in attributes_list)
+    att
+
+    attributes_list = tuple(
+        placeholder.attributes_to_dict().keys() for placeholder in placeholders
+    )
+    attributes_str = [
+#     f'"{class_name}".{attr.removeprefix(mangling_class_name)}'
+#     for attr in keys
+#     if not attr.endswith("_")
+# ]
 
     query = f"""SELECT {", ".join(attributes_str)}
         FROM joga_ai.slot
@@ -81,42 +88,51 @@ def search_slot() -> Response:
 
     # Perform SQL execute and fetch
     dao.cursor.execute(query)
-    rows_fetched = dao.cursor.fetchall()
 
-    if len(rows_fetched) == 0:
-        return Response(status=404)
+    result_objects: dict[Court, dict[str, Address | list[Slot]]] = {}
+    for row in dao.cursor.fetchall():
+        # Fetch Court
+        starting_position = 0
+        ending_position = len(attributes_list[0])
 
-    courts: dict[int, dict[str, dict[str, any] | list[dict[str, any]]]] = {}
+        placeholders[0].from_fetched_row(row[starting_position:ending_position])
+        court_to_insert = placeholders[0].copy()
 
-    for row in rows_fetched:
-        ending_position = 0
-        referenced_court_id = 0
+        result_objects[court_to_insert] = {}
 
-        for placeholder, attributes in zip(placeholders, attributes_list):
-            starting_position = ending_position
-            ending_position += len(attributes)
+        # Fetch and insert Address
+        starting_position = ending_position
+        ending_position += len(attributes_list[1])
 
-            placeholder.from_fetched_row(row[starting_position:ending_position])
+        placeholders[1].from_fetched_row(row[starting_position:ending_position])
+        address_to_insert = placeholders[1].copy()
 
-            if isinstance(placeholder, Court):
-                referenced_court_id = placeholder.id
-                if not referenced_court_id in courts.keys():
-                    courts[referenced_court_id] = placeholder.to_json_dict()
-            elif isinstance(placeholder, Address):
-                courts[referenced_court_id]["address"] = placeholder.to_json_dict()
-            elif isinstance(placeholder, Slot):
-                if "slots" in courts[referenced_court_id].keys():
-                    courts[referenced_court_id]["slots"].append(
-                        placeholder.to_json_dict()
-                    )
-                else:
-                    courts[referenced_court_id]["slots"] = [placeholder.to_json_dict()]
-            else:
-                raise ValueError(
-                    "Invalid placeholder type: should be Court, Address or Slot."
-                )
+        result_objects[court_to_insert]["address"] = address_to_insert
 
-    results = {"results": list(courts.values())}
+        # Fetch and insert Slot
+        starting_position = ending_position
+        ending_position += len(attributes_list[2])
+
+        placeholders[2].from_fetched_row(row[starting_position:ending_position])
+        slot_to_insert = placeholders[2].copy()
+
+        if "slots" in result_objects[court_to_insert].keys():
+            result_objects[court_to_insert]["slots"].append(slot_to_insert)
+        else:
+            result_objects[court_to_insert]["slots"] = [slot_to_insert]
+
+    # Convert one dictonary into attribute of the other
+    result_list = []
+    for court, objects in result_objects.items():
+        dict_court = court.attributes_to_dict()
+        dict_court["address"] = objects["address"].attributes_to_dict()
+
+        slot_list: list[Slot] = objects["slots"]
+        dict_court["slots"] = tuple(slot.attributes_to_dict() for slot in slot_list)
+
+        result_list.append(dict_court)
+
+    results = {"results": result_list}
     response = jsonify(results)
     response.status = 200
 
@@ -419,4 +435,4 @@ def cleanup():
 atexit.register(cleanup)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+    app.run(host="0.0.0.0", port=5000, debug=True)
