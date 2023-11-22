@@ -221,11 +221,3 @@ def get_dependent_select_query(referenced: Model_ID, dependent: Model_ID) -> str
 
 def get_select_str(attribute_names: list[str]) -> str:
     return ", ".join(attribute_names)
-
-
-# attributes = [
-#     f'"{class_name}".{attr.removeprefix(mangling_class_name)}'
-#     for attr in keys
-#     if not attr.endswith("_")
-# ]
-# attributes.append(f'"{class_name}".id')
