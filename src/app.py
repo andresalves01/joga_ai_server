@@ -18,7 +18,6 @@ from service.Model_ID_Service import (
     post_and_update_id,
     post_referenced_and_dependent_models,
     get_related_models,
-    get_select_str,
 )
 
 from flask import Flask, request, Response, jsonify
@@ -58,20 +57,48 @@ def search_slot() -> Response:
     if not dao.connect():
         return Response(status=503)
 
-    placeholders: tuple[Model] = (Court(schema), Address(schema), Slot(schema))
+    placeholders: dict[str, Model] = {
+        "court": Court(schema),
+        "address": Address(schema),
+        "slot": Slot(schema),
+    }
 
-    att
+    placeholders_attributes: dict[str, tuple[str]] = {
+        name: tuple(model.attributes_to_dict().keys())
+        for name, model in placeholders.items()
+    }
 
-    attributes_list = tuple(
-        placeholder.attributes_to_dict().keys() for placeholder in placeholders
+    # Perform SQL execute and fetch
+    dao.cursor.execute(get_search_query(placeholders_attributes))
+    result_objects = fetch_result_objects(placeholders, placeholders_attributes)
+
+    # Convert one dictionary into attribute of the other
+    results = {
+        "results": [
+            {
+                **court.attributes_to_dict(),
+                "address": objects["address"].attributes_to_dict(),
+                "slots": [slot.attributes_to_dict() for slot in objects["slots"]],
+            }
+            for court, objects in result_objects.items()
+        ]
+    }
+
+    response = jsonify(results)
+    response.status_code = 200
+
+    return response
+
+
+def get_search_query(placeholders_attributes: dict[str, tuple[str]]) -> str:
+    attributes_str = ", ".join(
+        f'"{name}".{attribute}'
+        for name, attributes in placeholders_attributes.items()
+        for attribute in attributes
     )
-    attributes_str = [
-#     f'"{class_name}".{attr.removeprefix(mangling_class_name)}'
-#     for attr in keys
-#     if not attr.endswith("_")
-# ]
 
-    query = f"""SELECT {", ".join(attributes_str)}
+    query = f"""
+        SELECT {attributes_str}
         FROM joga_ai.slot
         INNER JOIN joga_ai.court ON slot.court_id = court.id
         INNER JOIN joga_ai.address ON court.address_id = address.id
@@ -86,57 +113,41 @@ def search_slot() -> Response:
         AND court.address_id IS NOT NULL;"""
     print(query)
 
-    # Perform SQL execute and fetch
-    dao.cursor.execute(query)
+    return query
 
+
+def fetch_result_objects(
+    placeholders: dict[str, Model], placeholders_attributes: dict[str, tuple[str]]
+) -> dict[Court, dict[str, Address | list[Slot]]]:
     result_objects: dict[Court, dict[str, Address | list[Slot]]] = {}
     for row in dao.cursor.fetchall():
         # Fetch Court
         starting_position = 0
-        ending_position = len(attributes_list[0])
+        ending_position = len(placeholders_attributes["court"])
 
-        placeholders[0].from_fetched_row(row[starting_position:ending_position])
-        court_to_insert = placeholders[0].copy()
+        placeholders["court"].from_fetched_row(row[starting_position:ending_position])
+        court_to_insert = placeholders["court"].copy()
 
         result_objects[court_to_insert] = {}
 
         # Fetch and insert Address
         starting_position = ending_position
-        ending_position += len(attributes_list[1])
+        ending_position += len(placeholders_attributes["address"])
 
-        placeholders[1].from_fetched_row(row[starting_position:ending_position])
-        address_to_insert = placeholders[1].copy()
+        placeholders["address"].from_fetched_row(row[starting_position:ending_position])
 
-        result_objects[court_to_insert]["address"] = address_to_insert
+        result_objects[court_to_insert]["address"] = placeholders["address"].copy()
 
         # Fetch and insert Slot
         starting_position = ending_position
-        ending_position += len(attributes_list[2])
+        ending_position += len(placeholders_attributes["slot"])
 
-        placeholders[2].from_fetched_row(row[starting_position:ending_position])
-        slot_to_insert = placeholders[2].copy()
+        placeholders["slot"].from_fetched_row(row[starting_position:ending_position])
+        slot_to_insert = placeholders["slot"].copy()
 
-        if "slots" in result_objects[court_to_insert].keys():
-            result_objects[court_to_insert]["slots"].append(slot_to_insert)
-        else:
-            result_objects[court_to_insert]["slots"] = [slot_to_insert]
+        result_objects[court_to_insert].setdefault("slots", []).append(slot_to_insert)
 
-    # Convert one dictonary into attribute of the other
-    result_list = []
-    for court, objects in result_objects.items():
-        dict_court = court.attributes_to_dict()
-        dict_court["address"] = objects["address"].attributes_to_dict()
-
-        slot_list: list[Slot] = objects["slots"]
-        dict_court["slots"] = tuple(slot.attributes_to_dict() for slot in slot_list)
-
-        result_list.append(dict_court)
-
-    results = {"results": result_list}
-    response = jsonify(results)
-    response.status = 200
-
-    return response
+    return result_objects
 
 
 @app.route("/user/<int:id>/address", methods=["post"])
