@@ -18,8 +18,8 @@ class Model_ID(Model):
             dictonary.pop("id")
         return super().from_json(dictonary)
 
-    def to_json_dict(self) -> dict[str, Any]:
-        dictionary = super().to_json_dict()
+    def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
+        dictionary = super().attributes_to_dict(ignore_None)
         if self.id:
             dictionary["id"] = self.id
         return dictionary
@@ -66,3 +66,11 @@ class Model_ID(Model):
             self._id_ = value
         else:
             raise Exception("Invalid ID")
+
+    def __eq__(self, __value: object) -> bool:
+        if isinstance(__value, Model_ID):
+            return self.id == __value.id
+        return False
+
+    def __hash__(self) -> int:
+        return hash(self.id)

@@ -38,11 +38,11 @@ class User(Model_ID):
             self.address_id,
         )
 
-    def to_json_dict(self) -> dict[str, Any]:
-        json = super().to_json_dict()
-        json.pop("password")
+    def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
+        dictionary = super().attributes_to_dict(ignore_None)
+        dictionary.pop("password")
 
-        return json
+        return dictionary
 
     @property
     def name(self) -> str:

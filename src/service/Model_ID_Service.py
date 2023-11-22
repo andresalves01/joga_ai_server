@@ -29,7 +29,7 @@ def model_id_get(
             if len(objects_found) > 0:
                 # If addresses are found, populate the addresses list and message
                 response_data["objects"] = [
-                    object_found.to_json_dict() for object_found in objects_found
+                    object_found.attributes_to_dict() for object_found in objects_found
                 ]
                 response_data[
                     "message"
@@ -168,7 +168,7 @@ def post_referenced_and_dependent_models(
 
 def get_related_models(referenced: Model_ID, dependent: Model_ID, dao: DAO):
     if dao.connect():
-        query = get_query(referenced, dependent)
+        query = get_dependent_select_query(referenced, dependent)
         print(query, values := (dependent.id,))
 
         dao.cursor.execute(query, values)
@@ -179,14 +179,14 @@ def get_related_models(referenced: Model_ID, dependent: Model_ID, dao: DAO):
             results = []
 
             for row in rows_fetched:
-                attribute_length = len(get_attributes(dependent))
+                attribute_length = len(dependent.attributes_to_dict().keys())
                 dependent.from_fetched_row(row[:attribute_length])
                 referenced.from_fetched_row(row[attribute_length:])
 
-                dependent_json = dependent.to_json_dict()
+                dependent_json = dependent.attributes_to_dict()
                 dependent_json[
                     referenced.get_class_name().lower()
-                ] = referenced.to_json_dict()
+                ] = referenced.attributes_to_dict()
 
                 print(dependent_json)
                 results.append(dependent_json)
@@ -204,9 +204,9 @@ def get_related_models(referenced: Model_ID, dependent: Model_ID, dao: DAO):
         return response
 
 
-def get_query(referenced: Model_ID, dependent: Model_ID) -> str:
-    dependent_attributes = get_attributes(dependent)
-    referenced_attributes = get_attributes(referenced)
+def get_dependent_select_query(referenced: Model_ID, dependent: Model_ID) -> str:
+    dependent_attributes = dependent.attributes_to_dict().keys()
+    referenced_attributes = referenced.attributes_to_dict().keys()
 
     dependent_name = dependent.get_class_name().lower()
     referenced_name = referenced.get_class_name().lower()
@@ -217,23 +217,6 @@ def get_query(referenced: Model_ID, dependent: Model_ID) -> str:
             WHERE "{dependent_name}".id = %s"""
 
     return query
-
-
-def get_attributes(model_id_object: Model_ID) -> list[str]:
-    class_name = model_id_object.get_class_name()
-    mangling_class_name = f"_{class_name}__"
-
-    class_name = class_name.lower()
-    keys = model_id_object.get_attributes().keys()
-
-    attributes = [
-        f'"{class_name}".{attr.removeprefix(mangling_class_name)}'
-        for attr in keys
-        if not attr.endswith("_")
-    ]
-    attributes.append(f'"{class_name}".id')
-
-    return attributes
 
 
 def get_select_str(attribute_names: list[str]) -> str:
