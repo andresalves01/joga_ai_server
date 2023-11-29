@@ -20,15 +20,7 @@ CREATE TABLE IF NOT EXISTS address (
   latitude NUMERIC(9, 6),
   longitude NUMERIC(9, 6),
 
-  CHECK(street ~ '^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$'),
-  CHECK(number >= 0),
-  CHECK (zipcode ~ '^[0-9]{8,20}$'),
-  CHECK(complement ~ '^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$'),
-  CHECK(block ~ '^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$'),
-  CHECK(city_district ~ '^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$'),
-  CHECK(city ~ '^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$'),
-  CHECK(state ~ '^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$'),
-  CHECK(country ~ '^[a-zA-Z]{2,}([ ][a-zA-Z]+)*$')
+  CHECK(number >= 0)
 );
 
 -- Create the composite index on "city," "state," and "country"
@@ -69,7 +61,6 @@ CREATE TABLE IF NOT EXISTS court (
 
   FOREIGN KEY (address_id) REFERENCES address (id) ON DELETE SET NULL ON UPDATE CASCADE,
 
-  CHECK (name ~ '^[a-zA-Z0-9]{2,}([ ][a-zA-Z0-9]+)*$'),
   CHECK(player_qty >= 2 AND player_qty <= 22)
 );
 
@@ -87,7 +78,7 @@ CREATE TABLE IF NOT EXISTS court_rating (
 
   PRIMARY KEY (user_id, court_id),
   
-  FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (court_id) REFERENCES court (id) ON DELETE CASCADE ON UPDATE CASCADE,
   CHECK(rating > 0 AND rating <= 5)
 );

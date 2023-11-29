@@ -116,7 +116,7 @@ BEGIN
       AND cancellation_datetime IS NULL
       AND NOW() > reservation_datetime
   ) THEN
-    RAISE EXCEPTION "Cannot evaluate court if user does not have a previous and not cancelled slot reservation on that court";
+    RAISE EXCEPTION 'Cannot evaluate court if user does not have a previous and not cancelled slot reservation on that court';
   END IF;
   RETURN NEW;
 END;

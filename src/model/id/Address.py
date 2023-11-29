@@ -1,7 +1,6 @@
 import time
 from .Model_ID import Model_ID
 from geopy.geocoders import Nominatim
-from unidecode import unidecode
 import re
 
 
@@ -81,6 +80,8 @@ class Address(Model_ID):
             self.set_coordinates()
         elif self.latitude and self.longitude:
             self.set_address()
+        else:
+            print("Address can't be completed using geopy.")
 
     def get_search_address(self) -> str | None:
         search_address = (
@@ -108,6 +109,8 @@ class Address(Model_ID):
             self.longitude = (
                 location.longitude if not self.longitude else self.longitude
             )
+        else:
+            print("Coordintes could not be completed with geopy.")
 
     def set_address(self) -> None:
         time_elapsed = time.time() - last_request_time_
@@ -120,13 +123,14 @@ class Address(Model_ID):
 
             if location:
                 address_data = location.raw.get("address", {})
-                self.street = unidecode(address_data.get("road"))
+
+                self.street = address_data.get("road")
                 self.zipcode = address_data.get("postcode").replace("-", "")
-                self.block = unidecode(address_data.get("suburb"))
-                self.city_district = unidecode(address_data.get("city_district"))
-                self.city = unidecode(address_data.get("city"))
-                self.state = unidecode(address_data.get("state"))
-                self.country = unidecode(address_data.get("country"))
+                self.block = address_data.get("suburb")
+                self.city_district = address_data.get("city_district")
+                self.city = address_data.get("city")
+                self.state = address_data.get("state")
+                self.country = address_data.get("country")
 
     @property
     def street(self) -> str:
@@ -134,12 +138,7 @@ class Address(Model_ID):
 
     @street.setter
     def street(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 100
-        ):
-            self.__street = value
-        else:
-            raise Exception("Invalid street")
+        self.__street = value
 
     @property
     def number(self) -> int:
@@ -158,12 +157,7 @@ class Address(Model_ID):
 
     @zipcode.setter
     def zipcode(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 20
-        ):
-            self.__zipcode = value
-        else:
-            raise Exception("Invalid zipcode")
+        self.__zipcode = value
 
     @property
     def complement(self) -> str:
@@ -171,12 +165,7 @@ class Address(Model_ID):
 
     @complement.setter
     def complement(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 50
-        ):
-            self.__complement = value
-        else:
-            raise Exception("Invalid complement")
+        self.__complement = value
 
     @property
     def block(self) -> str:
@@ -184,12 +173,7 @@ class Address(Model_ID):
 
     @block.setter
     def block(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 100
-        ):
-            self.__block = value
-        else:
-            raise Exception("Invalid block")
+        self.__block = value
 
     @property
     def city_district(self) -> str:
@@ -197,12 +181,7 @@ class Address(Model_ID):
 
     @city_district.setter
     def city_district(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 100
-        ):
-            self.__city_district = value
-        else:
-            raise Exception("Invalid block")
+        self.__city_district = value
 
     @property
     def city(self) -> str:
@@ -210,12 +189,7 @@ class Address(Model_ID):
 
     @city.setter
     def city(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 100
-        ):
-            self.__city = value
-        else:
-            raise Exception("Invalid city")
+        self.__city = value
 
     @property
     def state(self) -> str:
@@ -223,12 +197,7 @@ class Address(Model_ID):
 
     @state.setter
     def state(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 100,
-        ):
-            self.__state = value
-        else:
-            raise Exception("Invalid state")
+        self.__state = value
 
     @property
     def country(self) -> str:
@@ -236,12 +205,7 @@ class Address(Model_ID):
 
     @country.setter
     def country(self, value: str) -> None:
-        if value is None or (
-            re.match(r"^[a-zA-Z0-9]+([ ][a-zA-Z0-9]+)*$", value) and len(value) <= 60
-        ):
-            self.__country = value
-        else:
-            raise Exception("Invalid country")
+        self.__country = value
 
     @property
     def latitude(self) -> float:

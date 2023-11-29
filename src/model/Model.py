@@ -48,7 +48,7 @@ class Model(ABC):
 
         return_dict = {}
         for name, value in attribute_dict.items():
-            if name.endswith("_") or (ignore_None and value):
+            if name.endswith("_") or (ignore_None and not value):
                 continue
 
             name = name.removeprefix(mangling_name)

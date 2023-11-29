@@ -42,10 +42,7 @@ class Court(Model_ID):
 
     @name.setter
     def name(self, value: str) -> None:
-        if value is None or re.match(r"^[a-zA-Z0-9]{2,}([ ][a-zA-Z0-9]+)*$", value):
-            self.__name = value
-        else:
-            raise Exception("Invalid name")
+        self.__name = value
 
     @property
     def player_qty(self) -> int:

@@ -25,7 +25,6 @@ from flask import Flask, request, Response, jsonify
 
 import atexit
 from datetime import datetime
-from collections.abc import Iterable
 
 app = Flask(__name__)
 
@@ -152,7 +151,7 @@ def search_slot() -> Response:
             GROUP BY
                 "court_has_amenity".court_id
             ) AS amenities ON "court".id = amenities.court_id""",
-        where_clauses='"address".id IS NOT NULL',
+        where_clauses='"address".id IS NOT NULL\n ORDER BY "court".rating DESC',
     )
 
     # Perform SQL execute and fetch
@@ -247,6 +246,9 @@ def fetch_results(
                     disagroupped_columns.append(tuples)
                 else:
                     disagroupped_columns.append(aggrouped_column)
+
+            if not disagroupped_columns[0]:
+                continue
 
             disagroupped_rows = [
                 [
