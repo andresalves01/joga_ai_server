@@ -43,12 +43,12 @@ class Model(ABC):
         return tuple(unused_elements)
 
     def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
-        attribute_dict = vars(self)
+        attribute_dict: dict[str, Any] = vars(self.copy())
         mangling_name = f"_{self.get_class_name()}__"
 
         return_dict = {}
         for name, value in attribute_dict.items():
-            if name.endswith("_") or (ignore_None and value is None):
+            if name.endswith("_") or (ignore_None and value):
                 continue
 
             name = name.removeprefix(mangling_name)

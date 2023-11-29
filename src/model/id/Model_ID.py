@@ -20,7 +20,7 @@ class Model_ID(Model):
 
     def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
         dictionary = super().attributes_to_dict(ignore_None)
-        if self.id:
+        if not ignore_None or self.id is not None:
             dictionary["id"] = self.id
         return dictionary
 

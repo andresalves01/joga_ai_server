@@ -134,6 +134,7 @@ TODO
 
 # TODOS
 - Verify if database's CHECKs are really useful, and, if not, delete them from there and from the backend.
-- Implement better exception treatment, the actual one is poorly made.
+- Implement better exception treatment, the current one is poorly made.
 - Separate app.py functions into other files, it is a mess right now.
+- Not use foreign key on the server, each model that references another should have a pointer to an object of the referenced class, at least in a 1:1 relationship.
 
