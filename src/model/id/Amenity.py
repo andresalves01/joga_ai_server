@@ -21,10 +21,7 @@ class Amenity(Model_ID):
 
     @name.setter
     def name(self, value: str) -> None:
-        if value is None or (len(value) <= 50 and re.match(r"^[a-zA-Z]+$", value)):
-            self.__name = value
-        else:
-            raise Exception("Invalid name")
+        self.__name = value
 
     @property
     def icon_url(self) -> str:

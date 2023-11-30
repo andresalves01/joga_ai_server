@@ -111,8 +111,7 @@ WHERE cancellation_datetime IS NULL;
 CREATE TABLE IF NOT EXISTS amenity (
   id SERIAL PRIMARY KEY,
   name VARCHAR(50) UNIQUE,
-  icon_url VARCHAR(2080),
-  CHECK (name ~ '^[a-zA-Z]+$')
+  icon_url VARCHAR(2080)
 );
 
 CREATE TABLE IF NOT EXISTS photo (

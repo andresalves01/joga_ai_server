@@ -1,12 +1,7 @@
-import time
 from .Model_ID import Model_ID
-from geopy.geocoders import Nominatim
-import re
 
 
 class Address(Model_ID):
-    last_request_time_ = 0.0
-
     def __init__(
         self,
         schema: str,
@@ -33,20 +28,8 @@ class Address(Model_ID):
         self.city = city
         self.state = state
         self.country = country
-
-        self.geolocator_ = Nominatim(user_agent="joga_ai")
-
         self.latitude = latitude
         self.longitude = longitude
-        self.set_coordinates()
-
-    @classmethod
-    def get_last_request_time(cls):
-        return cls.last_request_time_
-
-    @classmethod
-    def set_last_request_time(cls):
-        cls.last_request_time = time.time()
 
     def copy(self) -> Model_ID:
         return Address(
@@ -64,73 +47,6 @@ class Address(Model_ID):
             self.latitude,
             self.longitude,
         )
-
-    def from_json(self, dictonary: dict[str, any]) -> dict[str, any]:
-        valueToReturn = super().from_json(dictonary)
-        if self.get_search_address():
-            self.set_coordinates()
-        elif self.latitude and self.longitude:
-            self.set_address()
-
-        return valueToReturn
-
-    def from_fetched_row(self, row: tuple[any]) -> None:
-        super().from_fetched_row(row)
-        if self.get_search_address():
-            self.set_coordinates()
-        elif self.latitude and self.longitude:
-            self.set_address()
-        else:
-            print("Address can't be completed using geopy.")
-
-    def get_search_address(self) -> str | None:
-        search_address = (
-            f"{self.street}, {self.block}, {self.city}, {self.state}, {self.country}"
-        )
-        objectToReturn = (
-            search_address if search_address != "None, None, None, None, None" else None
-        )
-
-        return objectToReturn
-
-    def set_coordinates(self) -> None:
-        if (self.latitude and self.longitude) or not self.get_search_address():
-            return
-
-        time_elapsed = time.time() - Address.get_last_request_time()
-        if time_elapsed < 1.0:
-            time.sleep(1.0 - time_elapsed)
-
-        location = self.geolocator_.geocode(self.get_search_address())
-        Address.set_last_request_time()
-
-        if location is not None:
-            self.latitude = location.latitude if not self.latitude else self.latitude
-            self.longitude = (
-                location.longitude if not self.longitude else self.longitude
-            )
-        else:
-            print("Coordintes could not be completed with geopy.")
-
-    def set_address(self) -> None:
-        time_elapsed = time.time() - last_request_time_
-        if time_elapsed < 1.0:
-            time.sleep(1.0 - time_elapsed)
-
-        if self.latitude and self.longitude:
-            location = self.geolocator_.reverse(f"{self.latitude}, {self.longitude}")
-            last_request_time_ = time.time()
-
-            if location:
-                address_data = location.raw.get("address", {})
-
-                self.street = address_data.get("road")
-                self.zipcode = address_data.get("postcode").replace("-", "")
-                self.block = address_data.get("suburb")
-                self.city_district = address_data.get("city_district")
-                self.city = address_data.get("city")
-                self.state = address_data.get("state")
-                self.country = address_data.get("country")
 
     @property
     def street(self) -> str:
