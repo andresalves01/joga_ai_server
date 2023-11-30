@@ -1,7 +1,7 @@
 from configparser import ConfigParser
 
 
-def config(filename="src/dao/database.ini", section="postgresql") -> dict:
+def config(filename="dao/database.ini", section="postgresql") -> dict:
     parser = ConfigParser()
     parser.read(filenames=filename)
 
