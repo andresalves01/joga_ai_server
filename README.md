@@ -98,6 +98,8 @@ And you are all set.
 
 This backend uses JSON-based RESTful APIs to communicate with clients and associate applications. Therefore, use POST to create objects, GET to read them, PUT to update and DELETE to erase data.
 
+The main API route for now is /search/slot. There are plenty more API routes in app.py file than this README documents right now, but further documentation will be added here as soon as possible.
+
 ### Methods
 #### POST
 POST requests are responded with an id and a message to indicate success or failure of the requested operation.
@@ -124,7 +126,7 @@ Example of a Court row creation:
 }
 ```
 #### GET
-TODO
+For now, use /search/slot (no body required) to get couorts available for slot booking. 
 
 #### PUT
 TODO
@@ -134,7 +136,6 @@ TODO
 
 # TODOS
 - Verify if database's CHECKs are really useful, and, if not, delete them from there and from the backend.
-- Implement better exception treatment, the current one is poorly made.
-- Separate app.py functions into other files, it is a mess right now.
-- Not use foreign key on the server, each model that references another should have a pointer to an object of the referenced class, at least in a 1:1 relationship.
+- Separate app.py functions into other files.
+- Not use foreign key in the server, each model that references another should have a pointer to an object of the referenced class, at least in a 1:1 relationship.
 
