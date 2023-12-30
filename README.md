@@ -98,6 +98,8 @@ And you are all set.
 
 This backend uses JSON-based RESTful APIs to communicate with clients and associate applications. Therefore, use POST to create objects, GET to read them, PUT to update and DELETE to erase data.
 
+The main API route for now is /search/slot. There are plenty more API routes in app.py file than this README documents right now, but further documentation will be added here as soon as possible.
+
 ### Methods
 #### POST
 POST requests are responded with an id and a message to indicate success or failure of the requested operation.
@@ -124,7 +126,7 @@ Example of a Court row creation:
 }
 ```
 #### GET
-TODO
+For now, use /search/slot (no body required) to get couorts available for slot booking. 
 
 #### PUT
 TODO
