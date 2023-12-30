@@ -48,12 +48,16 @@ class Model(ABC):
         return f"DELETE FROM {self.get_table_name()} WHERE {condition};"
 
     @property
-    def schema(self) -> str:
-        return self.__schema
+    def schema(self) -> None | str:
+        return self._schema
 
     @schema.setter
     def schema(self, schema: str) -> None:
-        if isinstance(schema, str) or schema is None:
-            self.__schema = schema
-        else:
+        if schema is None:
+            self._schema = None
+            return
+
+        try:
+            self._schema = str(schema)
+        except TypeError:
             raise TypeError(f"Schema should be a String, not a {type(schema)}")

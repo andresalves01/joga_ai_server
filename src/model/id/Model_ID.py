@@ -8,64 +8,70 @@ class Model_ID(Model):
         super().__init__(schema)
         self.id = id
 
-    def from_fetched_row(self, row: tuple[Any]) -> None:
-        self.id = row[-1]
-        super().from_fetched_row(row)
-
-    def from_json(self, dictonary: dict[str, Any]) -> dict[str, Any]:
+    def from_dict(self, dictonary: dict[str, Any]) -> dict[str, Any]:
         if "id" in dictonary.keys():
             self.id = dictonary["id"]
             dictonary.pop("id")
-        return super().from_json(dictonary)
 
-    def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
-        dictionary = super().attributes_to_dict(ignore_None)
-        if not ignore_None or self.id is not None:
-            dictionary["id"] = self.id
-        return dictionary
+        return dictonary
+
+    def to_dict(
+        self, shoud_ignore_none: bool = False, include_id: bool = False
+    ) -> dict[str, Any]:
+        if not include_id or (self.id is None and shoud_ignore_none):
+            return {}
+        return {"id": self.id}
 
     def generate_sql_insert(self) -> tuple[str, tuple[Any, ...]]:
-        sql_query, values = super().generate_sql_insert()
-        return sql_query.replace(";", " RETURNING id;"), values
+        query, values = super().generate_sql_insert()
+        return query.replace(";", " RETURNING id;"), values
 
     def generate_sql_select(
         self, condition: str = None
-    ) -> None | str | tuple[str, tuple[int]]:
-        if condition:
-            return super().generate_sql_select(condition).replace(" FROM", ", id FROM")
-        elif self.id:
-            return super().generate_sql_select(f"id = %s").replace(
-                " FROM", ", id FROM"
-            ), (self.id,)
+    ) -> str | tuple[str, tuple[int]]:
+        if condition is None and self.id is None:
+            raise ValueError("Condition and id can't both be None")
 
-    def generate_sql_update(
-        self, condition: str = None
-    ) -> None | tuple[str, tuple[Any, ...]]:
-        if condition:
+        if condition is None:
+            return super().generate_sql_select("id = %s"), (self.id,)
+        else:
+            return super().generate_sql_select(condition)
+
+    def generate_sql_update(self, condition: str = None) -> tuple[str, tuple[Any, ...]]:
+        if condition is None and self.id is None:
+            raise ValueError("Condition and id can't both be None")
+
+        if condition is None:
+            query, values = super().generate_sql_update("id = %s")
+            return query, values + (self.id,)
+        else:
             return super().generate_sql_update(condition)
-        elif self.id:
-            sql_query, values = super().generate_sql_update(f"id = %s")
-            values += (self.id,)
-            return sql_query, values
 
     def generate_sql_delete(
         self, condition: str = None
-    ) -> None | str | tuple[str, tuple[int]]:
-        if condition:
+    ) -> str | tuple[str, tuple[int]]:
+        if condition is None and self.id is None:
+            raise ValueError("Condition and id can't both be None")
+
+        if condition is None:
+            return super().generate_sql_delete("id = %s"), (self.id,)
+        else:
             return super().generate_sql_delete(condition)
-        elif self.id:
-            return super().generate_sql_delete(f"id = %s"), (self.id,)
 
     @property
-    def id(self) -> int:
-        return self._id_
+    def id(self) -> None | int:
+        return self._id
 
     @id.setter
-    def id(self, value: int) -> None:
-        if value is None or value > 0:
-            self._id_ = value
-        else:
-            raise Exception("Invalid ID")
+    def id(self, id: int) -> None:
+        if id is None:
+            self._id = None
+            return
+
+        try:
+            self._id = int(id)
+        except TypeError:
+            raise TypeError(f"Schema should be an Integer, not a {type(id)}")
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Model_ID):
