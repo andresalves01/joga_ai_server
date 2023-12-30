@@ -52,8 +52,8 @@ class Model(ABC):
         return self.__schema
 
     @schema.setter
-    def schema(self, value: str) -> None:
-        if isinstance(value, str):
-            self.__schema = value
+    def schema(self, schema: str) -> None:
+        if isinstance(schema, str):
+            self.__schema = schema
         else:
-            raise TypeError
+            raise TypeError(f"Schema should be a String, not a {type(schema)}")
