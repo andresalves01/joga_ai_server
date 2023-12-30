@@ -33,3 +33,8 @@ CREATE OR REPLACE TRIGGER prevent_direct_rating_update_trigger
 BEFORE UPDATE ON court
 FOR EACH ROW
 EXECUTE FUNCTION prevent_direct_rating_update();
+
+CREATE TRIGGER automatic_address_deletion_trigger_court
+AFTER DELETE ON court
+FOR EACH ROW
+EXECUTE FUNCTION automatic_address_deletion();

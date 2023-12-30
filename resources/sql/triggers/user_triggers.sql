@@ -1,3 +1,4 @@
+SET search_path TO joga_ai;
 
 CREATE OR REPLACE FUNCTION prevent_user_deletion()
 RETURNS TRIGGER AS $$
@@ -16,6 +17,11 @@ END;
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE TRIGGER prevent_user_deletion_trigger
-BEFORE DELETE ON user
+BEFORE DELETE ON "user"
 FOR EACH ROW
 EXECUTE FUNCTION prevent_user_deletion();
+
+CREATE TRIGGER automatic_address_deletion_trigger_user
+AFTER DELETE ON "user"
+FOR EACH ROW
+EXECUTE FUNCTION automatic_address_deletion();

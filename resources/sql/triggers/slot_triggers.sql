@@ -1,4 +1,4 @@
-SET search_path TO joga_ai
+SET search_path TO joga_ai;
 
 CREATE OR REPLACE FUNCTION replace_canceled_booking()
 RETURNS TRIGGER AS $$

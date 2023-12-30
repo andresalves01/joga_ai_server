@@ -20,10 +20,10 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER check_court_rating_trigger
 BEFORE INSERT OR UPDATE ON court_rating
 FOR EACH ROW
-EXECUTE FUNCTION check_court_rating()
+EXECUTE FUNCTION check_court_rating();
 
 
-CREATE OR REPLACE FUNCTION new_court_evaluation()
+CREATE OR REPLACE FUNCTION insert_court_evaluation()
 RETURNS TRIGGER AS $$
 BEGIN
   UPDATE court
@@ -38,7 +38,7 @@ $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER new_court_evaluation_trigger
 AFTER INSERT ON court_rating
 FOR EACH ROW
-EXECUTE FUNCTION insert_new_court_evaluation();
+EXECUTE FUNCTION insert_court_evaluation();
 
 CREATE OR REPLACE FUNCTION delete_court_evaluation()
 RETURNS TRIGGER AS $$
