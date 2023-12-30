@@ -1,0 +1,8 @@
+CREATE SCHEMA IF NOT EXISTS joga_ai;
+SET search_path TO joga_ai;
+
+CREATE TABLE IF NOT EXISTS amenity (
+  id SERIAL PRIMARY KEY,
+  name VARCHAR(50) UNIQUE,
+  icon_url VARCHAR(2080)
+);

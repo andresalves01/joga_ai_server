@@ -133,8 +133,14 @@ TODO
 TODO
 
 # TODOS
-- Verify if database's CHECKs are really useful, and, if not, delete them from there and from the backend.
+### Database
+- Create Court Owner user type (1 User : N Courts);
+- Implement user authentication;
+- Create a table for payments (1 User : 1 Payment or N Users: N Payments) and make it connected to the slot reservation (1 Payment : 1 Slot Reservation);
+- Implement cancellation policy;
+- Create and implement Court Modalities - soccer, tennis, basketball and so on.
+### Server
 - Implement better exception treatment, the current one is poorly made.
 - Separate app.py functions into other files, it is a mess right now.
-- Not use foreign key on the server, each model that references another should have a pointer to an object of the referenced class, at least in a 1:1 relationship.
+- Not use foreign key on the server. Each model that references another should have a pointer to an object of the referenced class, at least in a 1:1 relationship.
 
