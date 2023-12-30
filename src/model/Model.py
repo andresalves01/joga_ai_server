@@ -7,106 +7,53 @@ class Model(ABC):
         super().__init__()
         self.schema = schema
 
-    @abstractmethod
-    def copy(self) -> Any:
-        pass
-
     def get_class_name(self) -> str:
         return self.__class__.__name__
 
-    def from_json(self, json_dictonary: dict[str, Any]) -> dict[str, Any]:
-        used_items = {}
-        for key, value in json_dictonary.items():
-            attribute_name = f"_{self.get_class_name()}__{key}"
+    def get_table_name(self) -> str:
+        return f'{self.schema}."{self.get_class_name().lower()}"'
 
-            if hasattr(self, attribute_name):
-                self.__setattr__(attribute_name, value)
-                used_items[key] = value
+    @abstractmethod
+    def copy(self) -> "Model":
+        pass
 
-        json_dictonary = {
-            key: value for key, value in json_dictonary.items() if key not in used_items
-        }
-        return json_dictonary
+    @abstractmethod
+    def from_dict(self, dictonary: dict[str, Any]) -> dict[str, Any]:
+        pass
 
-    def from_fetched_row(self, row: tuple[Any]) -> tuple[Any]:
-        attributes = iter(self.__dict__.keys())
-
-        used_elements = []
-        for name, value in zip(attributes, row):
-            while name.endswith("_"):
-                name = next(attributes)
-
-            self.__dict__[name] = value
-            used_elements.append(value)
-
-        unused_elements = [x for x in row if x not in used_elements]
-        return tuple(unused_elements)
-
-    def attributes_to_dict(self, ignore_None: bool = False) -> dict[str, Any]:
-        attribute_dict: dict[str, Any] = vars(self.copy())
-        mangling_name = f"_{self.get_class_name()}__"
-
-        return_dict = {}
-        for name, value in attribute_dict.items():
-            if name.endswith("_") or (ignore_None and not value):
-                continue
-
-            name = name.removeprefix(mangling_name)
-            return_dict[name] = value
-
-        return return_dict
+    @abstractmethod
+    def to_dict(self, shoud_ignore_none: bool = False) -> dict[str, Any]:
+        pass
 
     def generate_sql_insert(self) -> tuple[str, tuple[Any, ...]]:
-        sql_query = f'INSERT INTO {self.schema}."{self.get_class_name().lower()}"('
-        sql_values = "VALUES ("
-        values = []
+        self_dict = self.to_dict(shoud_ignore_none=True)
+        attributes = self_dict.keys()
 
-        for name, value in self.attributes_to_dict(ignore_None=True).items():
-            sql_query += f"{name}, "
-            sql_values += f"%s, "
-            values.append(value)
+        query = f"""INSERT INTO {self.get_table_name()} ({", ".join(attributes)})
+                    VALUES ({", ".join(["%s" for i in attributes])});"""
 
-        sql_query = sql_query.removesuffix(", ") + ") "
-        sql_values = sql_values.removesuffix(", ") + ");"
-
-        sql_query += sql_values
-        return sql_query, tuple(values)
+        return query, tuple(self_dict.values())
 
     def generate_sql_select(self, condition: str) -> str:
-        sql_query = "SELECT "
-
-        for name in self.attributes_to_dict().keys():
-            sql_query += f"{name}, "
-
-        sql_query = f'{sql_query.removesuffix(", ")} FROM {self.schema}."{self.get_class_name().lower()}" WHERE {condition};'
-        return sql_query
+        return f"""SELECT {', '.join(self.to_dict().keys())} FROM {self.get_table_name()}
+                    WHERE {condition};"""
 
     def generate_sql_update(self, condition: str) -> tuple[str, tuple[Any]]:
-        sql_query = f'UPDATE {self.schema}."{self.get_class_name().lower()}" SET '
-        values = []
+        self_dict = self.to_dict()
+        query = f"UPDATE {self.get_table_name()} SET {' = %s, '.join(self_dict.keys()) + ' = %s'} WHERE {condition};"
 
-        for name, value in self.attributes_to_dict().items():
-            sql_query += f"{name} = %s, "
-            values.append(value)
-
-        sql_query = f'{sql_query.rstrip(", ")} WHERE {condition};'
-        return sql_query, tuple(values)
+        return query, tuple(self_dict.values())
 
     def generate_sql_delete(self, condition: str) -> str:
-        sql_query = f'DELETE FROM {self.schema}."{self.get_class_name().lower()}" WHERE {condition};'
-        return sql_query
-
-    def __str__(self) -> str:
-        return_string = f"{self.get_class_name()} {{"
-
-        for name, value in self.attributes_to_dict().items():
-            return_string += f"\n  {name} = {value}"
-        return return_string + "\n}"
+        return f"DELETE FROM {self.get_table_name()} WHERE {condition};"
 
     @property
     def schema(self) -> str:
-        return self.__schema_
+        return self.__schema
 
     @schema.setter
-    def schema(self, value) -> None:
-        self.__schema_ = value
+    def schema(self, value: str) -> None:
+        if isinstance(value, str):
+            self.__schema = value
+        else:
+            raise TypeError
