@@ -8,17 +8,13 @@ class Model_ID(Model):
         super().__init__(schema)
         self.id = id
 
-    def from_dict(self, dictonary: dict[str, Any]) -> dict[str, Any]:
-        if "id" in dictonary.keys():
-            self.id = dictonary["id"]
-            dictonary.pop("id")
-
-        return dictonary
+    def from_dict(self, dictionary: dict[str, Any]) -> None:
+        self.id = dictionary.pop("id", None)
 
     def to_dict(
-        self, shoud_ignore_none: bool = False, include_id: bool = False
+        self, ignore_none: bool = False, include_id: bool = False
     ) -> dict[str, Any]:
-        if not include_id or (self.id is None and shoud_ignore_none):
+        if not include_id or (self.id is None and ignore_none):
             return {}
         return {"id": self.id}
 

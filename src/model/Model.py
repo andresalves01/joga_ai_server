@@ -18,7 +18,7 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def from_dict(self, dictonary: dict[str, Any]) -> dict[str, Any]:
+    def from_dict(self, dictonary: dict[str, Any]) -> None:
         pass
 
     @abstractmethod
