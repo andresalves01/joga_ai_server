@@ -59,7 +59,7 @@ class Model_ID(Model):
         return self._id
 
     @id.setter
-    def id(self, id: int) -> None:
+    def id(self, id: None | int) -> None:
         if id is None:
             self._id = None
             return

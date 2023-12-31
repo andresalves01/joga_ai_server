@@ -108,7 +108,7 @@ class Address(Model_ID):
         return self._street
 
     @street.setter
-    def street(self, street: str) -> None:
+    def street(self, street: None | str) -> None:
         if street is None:
             self._street = None
             return
@@ -129,7 +129,7 @@ class Address(Model_ID):
         return self._number
 
     @number.setter
-    def number(self, number: str) -> None:
+    def number(self, number: None | str) -> None:
         if number is None:
             self._number = None
             return
@@ -150,7 +150,7 @@ class Address(Model_ID):
         return self._zipcode
 
     @zipcode.setter
-    def zipcode(self, zipcode: str) -> None:
+    def zipcode(self, zipcode: None | str) -> None:
         if zipcode is None:
             self._zipcode = None
             return
@@ -171,7 +171,7 @@ class Address(Model_ID):
         return self._complement
 
     @complement.setter
-    def complement(self, complement: str) -> None:
+    def complement(self, complement: None | str) -> None:
         if complement is None:
             self._complement = None
             return
@@ -192,7 +192,7 @@ class Address(Model_ID):
         return self._neighborhood
 
     @neighborhood.setter
-    def neighborhood(self, neighborhood: str) -> None:
+    def neighborhood(self, neighborhood: None | str) -> None:
         if neighborhood is None:
             self._neighborhood = None
             return
@@ -215,7 +215,7 @@ class Address(Model_ID):
         return self._city_district
 
     @city_district.setter
-    def city_district(self, city_district: str) -> None:
+    def city_district(self, city_district: None | str) -> None:
         if city_district is None:
             self._city_district = None
             return
@@ -238,7 +238,7 @@ class Address(Model_ID):
         return self._city
 
     @city.setter
-    def city(self, city: str) -> None:
+    def city(self, city: None | str) -> None:
         if city is None:
             self._city = None
             return
@@ -259,7 +259,7 @@ class Address(Model_ID):
         return self._county
 
     @county.setter
-    def county(self, county: str) -> None:
+    def county(self, county: None | str) -> None:
         if county is None:
             self._county = None
             return
@@ -280,7 +280,7 @@ class Address(Model_ID):
         return self._state
 
     @state.setter
-    def state(self, state: str) -> None:
+    def state(self, state: None | str) -> None:
         if state is None:
             self._state = None
             return
@@ -301,7 +301,7 @@ class Address(Model_ID):
         return self._state_code
 
     @state_code.setter
-    def state_code(self, state_code: str) -> None:
+    def state_code(self, state_code: None | str) -> None:
         if state_code is None:
             self._state_code = None
             return
@@ -322,7 +322,7 @@ class Address(Model_ID):
         return self._country
 
     @country.setter
-    def country(self, country: str) -> None:
+    def country(self, country: None | str) -> None:
         if country is None:
             self._country = None
             return
@@ -343,7 +343,7 @@ class Address(Model_ID):
         return self._country_code
 
     @country_code.setter
-    def country_code(self, country_code: str) -> None:
+    def country_code(self, country_code: None | str) -> None:
         if country_code is None:
             self._country_code = None
             return
@@ -366,7 +366,7 @@ class Address(Model_ID):
         return self._latitude
 
     @latitude.setter
-    def latitude(self, latitude: float) -> None:
+    def latitude(self, latitude: None | float) -> None:
         if latitude is None:
             self._latitude = None
             return
@@ -382,7 +382,7 @@ class Address(Model_ID):
         return self._longitude
 
     @longitude.setter
-    def longitude(self, longitude: float) -> None:
+    def longitude(self, longitude: None | float) -> None:
         if longitude is None:
             self._longitude = None
             return

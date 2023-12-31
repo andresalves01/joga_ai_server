@@ -52,7 +52,7 @@ class Model(ABC):
         return self._schema
 
     @schema.setter
-    def schema(self, schema: str) -> None:
+    def schema(self, schema: None | str) -> None:
         if schema is None:
             self._schema = None
             return
