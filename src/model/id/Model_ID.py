@@ -65,7 +65,11 @@ class Model_ID(Model):
             return
 
         try:
-            self._id = int(id)
+            id = int(id)
+            if id <= 0:
+                raise ValueError("Id should be greater than zero")
+
+            self.__id = id
         except TypeError:
             raise TypeError(f"Schema should be an Integer, not a {type(id)}")
 

@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any
 from .Model_ID import Model_ID
 
 
@@ -47,6 +47,7 @@ class Amenity(Model_ID):
                 raise ValueError(
                     f"Name length should be less than 50 characters, but it has {len(name)}"
                 )
+
             self._name = name
         except TypeError:
             raise TypeError(f"Name should be a String, not a {type(name)}")
