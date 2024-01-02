@@ -17,7 +17,13 @@ class Photo(Model_ID):
         self.presentaton_order = presentaton_order
 
     def copy(self) -> "Photo":
-        return Photo(self.schema, self.id, self.url, self.court_id)
+        return Photo(
+            schema=self.schema,
+            id=self.id,
+            url=self.url,
+            court_id=self.court_id,
+            presentaton_order=self.presentation_order,
+        )
 
     def from_dict(self, dictionary: dict[str, Any]) -> None:
         super().from_dict(dictionary)

@@ -22,7 +22,7 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def to_dict(self, shoud_ignore_none: bool = False) -> dict[str, Any]:
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         pass
 
     def generate_sql_insert(self) -> tuple[str, tuple[Any, ...]]:

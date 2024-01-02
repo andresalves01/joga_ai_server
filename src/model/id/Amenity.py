@@ -11,7 +11,9 @@ class Amenity(Model_ID):
         self.icon_url = icon_url
 
     def copy(self) -> "Amenity":
-        return Amenity(self.schema, self.name, self.id, self.icon_url)
+        return Amenity(
+            schema=self.schema, name=self.name, id=self.id, icon_url=self.icon_url
+        )
 
     def from_dict(self, dictionary: dict[str, Any]) -> None:
         super().from_dict(dictionary)

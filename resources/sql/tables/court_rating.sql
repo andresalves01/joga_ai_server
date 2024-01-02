@@ -4,7 +4,7 @@ CREATE TABLE IF NOT EXISTS court_rating (
   user_id INT,
   court_id INT NOT NULL,
   rating INT NOT NULL,
-  comment VARCHAR(480),
+  comment TEXT,
   
   FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (court_id) REFERENCES court (id) ON DELETE CASCADE ON UPDATE CASCADE,

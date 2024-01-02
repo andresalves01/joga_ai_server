@@ -19,49 +19,80 @@ class Court_Rating(Model):
 
     def copy(self) -> Model:
         return Court_Rating(
-            self.schema, self.user_id, self.court_id, self.rating, self.comment
+            schema=self.schema,
+            user_id=self.user_id,
+            court_id=self.court_id,
+            rating=self.rating,
+            comment=self.comment,
         )
 
     @property
-    def user_id(self) -> int:
-        return self.__user_id
+    def user_id(self) -> None | int:
+        return self._user_id
 
     @user_id.setter
-    def user_id(self, value: int) -> None:
-        if value is None or value > 0:
-            self.__user_id = value
-        else:
-            raise Exception("Invalid User ID")
+    def user_id(self, user_id: None | int) -> None:
+        if user_id is None:
+            self._user_id = None
+            return
+
+        try:
+            user_id = int(user_id)
+            if user_id <= 0:
+                raise ValueError("user_id should be greater than zero")
+
+            self._user_id = user_id
+        except TypeError:
+            raise TypeError(f"user_id should be an Integer, not a {type(user_id)}")
 
     @property
-    def court_id(self) -> int:
-        return self.__court_id
+    def court_id(self) -> None | int:
+        return self._court_id
 
     @court_id.setter
-    def court_id(self, value: int) -> None:
-        if value is None or value > 0:
-            self.__court_id = value
-        else:
-            raise Exception("Invalid Court ID")
+    def court_id(self, court_id: None | int) -> None:
+        if court_id is None:
+            self._court_id = None
+            return
+
+        try:
+            court_id = int(court_id)
+            if court_id <= 0:
+                raise ValueError("court_id should be greater than zero")
+
+            self._court_id = court_id
+        except TypeError:
+            raise TypeError(f"court_id should be an Integer, not a {type(court_id)}")
 
     @property
-    def rating(self) -> int:
-        return self.__rating
+    def rating(self) -> None | float:
+        return self._rating
 
     @rating.setter
-    def rating(self, value: int) -> None:
-        if value is None or (value > 0 and value <= 5):
-            self.__rating = value
-        else:
-            raise Exception("invalid rating")
+    def rating(self, rating: None | float) -> None:
+        if rating is None:
+            self._rating = None
+            return
+
+        try:
+            rating = float(rating)
+            if rating < 1.0 or rating > 5.0:
+                raise ValueError("Rating should be between 1.0 and 5.0")
+            self._rating = rating
+        except TypeError:
+            raise TypeError(f"Rating should be Float, not a {type(rating)}")
 
     @property
-    def comment(self) -> str:
-        return self.__comment
+    def comment(self) -> None | str:
+        return self._comment
 
     @comment.setter
-    def comment(self, value: str) -> None:
-        if value is None or len(value) <= 480:
-            self.__comment = value
-        else:
-            raise Exception("Invalid Comment")
+    def comment(self, comment: None | str) -> None:
+        if comment is None:
+            self._comment = None
+            return
+
+        try:
+            self._comment = str(comment)
+        except TypeError:
+            raise TypeError(f"comment should be a String, not a {type(comment)}")

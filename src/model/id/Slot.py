@@ -23,13 +23,13 @@ class Slot(Model_ID):
 
     def copy(self) -> "Slot":
         return Slot(
-            self.schema,
-            self.id,
-            self.reservation_datetime,
-            self.price,
-            self.cancellation_datetime,
-            self.user_id,
-            self.court_id,
+            schema=self.schema,
+            id=self.id,
+            reservation_datetime=self.reservation_datetime,
+            price=self.price,
+            cancellation_datetime=self.cancellation_datetime,
+            user_id=self.user_id,
+            court_id=self.court_id,
         )
 
     def from_dict(self, dictionary: dict[str, Any]) -> None:
