@@ -69,9 +69,9 @@ class Model_ID(Model):
             if id <= 0:
                 raise ValueError("Id should be greater than zero")
 
-            self.__id = id
+            self._id = id
         except TypeError:
-            raise TypeError(f"Schema should be an Integer, not a {type(id)}")
+            raise TypeError(f"Id should be an Integer, not a {type(id)}")
 
     def __eq__(self, __value: object) -> bool:
         if isinstance(__value, Model_ID):

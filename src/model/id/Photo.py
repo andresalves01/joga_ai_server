@@ -27,7 +27,7 @@ class Photo(Model_ID):
 
     @property
     def url(self) -> None | str:
-        return self.__url
+        return self._url
 
     @url.setter
     def url(self, url: None | str) -> None:
@@ -48,7 +48,7 @@ class Photo(Model_ID):
 
     @property
     def court_id(self) -> None | int:
-        return self.__court_id
+        return self._court_id
 
     @court_id.setter
     def court_id(self, court_id: None | int) -> None:

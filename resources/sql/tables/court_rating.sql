@@ -8,5 +8,5 @@ CREATE TABLE IF NOT EXISTS court_rating (
   
   FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE ON UPDATE CASCADE,
   FOREIGN KEY (court_id) REFERENCES court (id) ON DELETE CASCADE ON UPDATE CASCADE,
-  CHECK(rating > 0 AND rating <= 5)
+  CHECK(rating >= 1 AND rating <= 5)
 );

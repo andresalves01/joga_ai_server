@@ -6,10 +6,10 @@ from model.id.Amenity import Amenity
 from model.Court_Bookmark import Court_Bookmark
 from model.Court_has_Amenity import Court_has_Amenity
 from model.Court_Rating import Court_Rating
-from model.id.Court import Court
+from src.model.id.address.Court import Court
 from model.id.Photo import Photo
 from model.id.Slot import Slot
-from model.id.User import User
+from src.model.id.address.User import User
 
 from service.Model_Service import model_post, model_get, model_put, model_delete
 from service.Model_ID_Service import (
