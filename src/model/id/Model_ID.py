@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, overload
 from ..Model import Model
 from typing import Any
 
@@ -8,7 +8,7 @@ class Model_ID(Model):
         super().__init__(schema)
         self.id = id
 
-    def from_dict(self, dictionary: dict[str, Any]) -> None:
+    def from_dict(self, dictionary: dict[str, Any]) -> "Model_ID":
         self.id = dictionary.pop("id", None)
 
     def to_dict(
@@ -22,16 +22,32 @@ class Model_ID(Model):
         query, values = super().generate_sql_insert()
         return query.replace(";", " RETURNING id;"), values
 
+    @overload
+    def generate_sql_select(self, condition: str) -> str:
+        ...
+
+    @overload
+    def generate_sql_select(self) -> tuple[str, tuple[int]]:
+        ...
+
     def generate_sql_select(
         self, condition: str = None
     ) -> str | tuple[str, tuple[int]]:
         if condition is None and self.id is None:
             raise ValueError("Condition and id can't both be None")
 
-        if condition is None:
-            return super().generate_sql_select("id = %s"), (self.id,)
-        else:
+        if condition is not None:
             return super().generate_sql_select(condition)
+        else:
+            return super().generate_sql_select("id = %s"), (self.id,)
+
+    @overload
+    def generate_sql_update(self, condition: str) -> tuple[str, tuple[Any, ...]]:
+        ...
+
+    @overload
+    def generate_sql_update(self) -> tuple[str, tuple[Any, ...]]:
+        ...
 
     def generate_sql_update(self, condition: str = None) -> tuple[str, tuple[Any, ...]]:
         if condition is None and self.id is None:
@@ -42,6 +58,14 @@ class Model_ID(Model):
             return query, values + (self.id,)
         else:
             return super().generate_sql_update(condition)
+
+    @overload
+    def generate_sql_delete(self, condition: str) -> str:
+        ...
+
+    @overload
+    def generate_sql_delete(self) -> tuple[str, tuple[int]]:
+        ...
 
     def generate_sql_delete(
         self, condition: str = None

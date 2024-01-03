@@ -18,10 +18,12 @@ class Court_Bookmark(Model):
             schema=self.schema, user_id=self.user_id, court_id=self.court_id
         )
 
-    def from_dict(self, dictonary: dict[str, Any]) -> None:
+    def from_dict(self, dictonary: dict[str, Any]) -> "Court_Bookmark":
         super().from_dict(dictonary)
         self.user_id = dictonary.pop("user_id", None)
         self.court_id = dictonary.pop("court_id", None)
+
+        return self.copy()
 
     def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         self_dict = {"user_id": self.user_id, "court_id": self.court_id}
@@ -32,6 +34,8 @@ class Court_Bookmark(Model):
             for key, value in self_dict.items():
                 if value is not None:
                     result[key] = value
+        else:
+            result.update(self_dict)
 
         return result
 

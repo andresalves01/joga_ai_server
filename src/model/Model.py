@@ -18,7 +18,7 @@ class Model(ABC):
         pass
 
     @abstractmethod
-    def from_dict(self, dictonary: dict[str, Any]) -> None:
+    def from_dict(self, dictonary: dict[str, Any]) -> "Model":
         pass
 
     @abstractmethod
@@ -38,7 +38,7 @@ class Model(ABC):
         return f"""SELECT {', '.join(self.to_dict().keys())} FROM {self.get_table_name()}
                     WHERE {condition};"""
 
-    def generate_sql_update(self, condition: str) -> tuple[str, tuple[Any]]:
+    def generate_sql_update(self, condition: str) -> tuple[str, tuple[Any, ...]]:
         self_dict = self.to_dict()
         query = f"UPDATE {self.get_table_name()} SET {' = %s, '.join(self_dict.keys()) + ' = %s'} WHERE {condition};"
 

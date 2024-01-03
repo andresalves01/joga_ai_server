@@ -25,11 +25,32 @@ class Photo(Model_ID):
             presentaton_order=self.presentation_order,
         )
 
-    def from_dict(self, dictionary: dict[str, Any]) -> None:
+    def from_dict(self, dictionary: dict[str, Any]) -> "Photo":
         super().from_dict(dictionary)
         self.url = dictionary.pop("url", None)
         self.court_id = dictionary.pop("court_id", None)
         self.presentaton_order = dictionary.pop("presentation_order", None)
+
+        return self.copy()
+
+    def to_dict(
+        self, ignore_none: bool = False, include_id: bool = False
+    ) -> dict[str, Any]:
+        self_dict = {
+            "url": self.url,
+            "court_id": self.court_id,
+            "presentation_order": self.presentation_order,
+        }
+        result = super().to_dict()
+
+        if ignore_none:
+            for key, value in result.items():
+                if value is not None:
+                    result[key] = value
+        else:
+            result.update(self_dict)
+
+        return result
 
     @property
     def url(self) -> None | str:

@@ -18,10 +18,25 @@ class Court_has_Amenity(Model):
             schema=self.schema, amenity_id=self.amenity_id, court_id=self.court_id
         )
 
-    def from_dict(self, dictonary: dict[str, Any]) -> None:
+    def from_dict(self, dictonary: dict[str, Any]) -> "Court_has_Amenity":
         super().from_dict(dictonary)
         self.amenity_id = dictonary.pop("amenity_id", None)
         self.court_id = dictonary.pop("court_id", None)
+
+        return self.copy()
+
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
+        self_dict = {"amentity_id": self.amenity_id, "court_id": self.court_id}
+        result = super().to_dict(ignore_none)
+
+        if ignore_none:
+            for key, value in result.items():
+                if value is not None:
+                    result[key] = value
+        else:
+            result.update(self_dict)
+
+        return result
 
     @property
     def amenity_id(self) -> None | int:

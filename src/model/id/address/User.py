@@ -38,7 +38,7 @@ class User(Model_Address_ID):
             address_id=self.address_id,
         )
 
-    def from_dict(self, dictionary: dict[str, Any]) -> None:
+    def from_dict(self, dictionary: dict[str, Any]) -> "User":
         super().from_dict(dictionary)
         self.name = dictionary.pop("name", None)
         self.email = dictionary.pop("email", None)
@@ -46,6 +46,8 @@ class User(Model_Address_ID):
         self.ssn = dictionary.pop("ssn", None)
         self.phone_number = dictionary.pop("phone_number", None)
         self.profile_pic_url = dictionary.pop("profile_pic_url", None)
+
+        return self.copy()
 
     def to_dict(
         self, ignore_none: bool = False, include_id: bool = False
@@ -67,6 +69,8 @@ class User(Model_Address_ID):
             for key, value in self_dict.items():
                 if value is not None:
                     result[key] = value
+        else:
+            result.update(self_dict)
 
         return result
 

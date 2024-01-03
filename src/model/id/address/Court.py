@@ -27,11 +27,13 @@ class Court(Model_Address_ID):
             address_id=self.address_id,
         )
 
-    def from_dict(self, dictionary: dict[str, Any]) -> None:
+    def from_dict(self, dictionary: dict[str, Any]) -> "Court":
         super().from_dict(dictionary)
         self.name = dictionary.pop("name", None)
         self.description = dictionary.pop("description", None)
         self.rating = dictionary.pop("rating", None)
+
+        return self.copy()
 
     def to_dict(
         self, ignore_none: bool = False, include_id: bool = False
@@ -47,6 +49,8 @@ class Court(Model_Address_ID):
             for key, value in self_dict.items():
                 if value is not None:
                     result[key] = value
+        else:
+            result.update(self_dict)
 
         return result
 

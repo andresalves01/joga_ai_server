@@ -75,6 +75,8 @@ class Address(Model_ID):
         self.latitude = dictionary.pop("latitude", None)
         self.longitude = dictionary.pop("longitude", None)
 
+        return self.copy()
+
     def to_dict(
         self, ignore_none: bool = False, include_id: bool = False
     ) -> dict[str, Any]:
@@ -100,6 +102,8 @@ class Address(Model_ID):
             for key, value in self_dict.items():
                 if value is not None:
                     result[key] = value
+        else:
+            result.update(self_dict)
 
         return result
 

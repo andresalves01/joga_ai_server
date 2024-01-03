@@ -32,13 +32,15 @@ class Slot(Model_ID):
             court_id=self.court_id,
         )
 
-    def from_dict(self, dictionary: dict[str, Any]) -> None:
+    def from_dict(self, dictionary: dict[str, Any]) -> "Slot":
         super().from_dict(dictionary)
         self.reservation_datetime = dictionary.pop("reservation_datetime", None)
         self.price = dictionary.pop("price", None)
         self.cancellation_datetime = dictionary.pop("cancellation_datetime", None)
         self.court_id = dictionary.pop("court_id", None)
         self.user_id = dictionary.pop("user_id", None)
+
+        return self.copy()
 
     def to_dict(
         self, ignore_none: bool = False, include_id: bool = False
@@ -56,6 +58,8 @@ class Slot(Model_ID):
             for key, value in self_dict.items():
                 if value is not None:
                     result[key] = value
+        else:
+            result.update(self_dict)
 
         return result
 

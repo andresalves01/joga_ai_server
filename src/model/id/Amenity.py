@@ -15,10 +15,12 @@ class Amenity(Model_ID):
             schema=self.schema, name=self.name, id=self.id, icon_url=self.icon_url
         )
 
-    def from_dict(self, dictionary: dict[str, Any]) -> None:
+    def from_dict(self, dictionary: dict[str, Any]) -> "Amenity":
         super().from_dict(dictionary)
         self.name = dictionary.pop("name", None)
         self.icon_url = dictionary.pop("icon_url", None)
+
+        return self.copy()
 
     def to_dict(
         self, ignore_none: bool = False, include_id: bool = False
@@ -30,6 +32,8 @@ class Amenity(Model_ID):
             for key, value in self_dict.items():
                 if value is not None:
                     result[key] = value
+        else:
+            result.update(self_dict)
 
         return result
 
