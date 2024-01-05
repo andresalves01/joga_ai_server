@@ -9,7 +9,7 @@ class Model_Address_ID(Model_ID):
 
     def from_dict(self, dictionary: dict[str, Any]) -> None:
         super().from_dict(dictionary)
-        self.address_id = dictionary.pop("address_id", None)
+        self.address_id = dictionary.pop("address_id", self.address_id)
 
     def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         super_to_dict = super().to_dict(ignore_none)

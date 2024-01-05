@@ -17,8 +17,8 @@ class Amenity(Model_ID):
 
     def from_dict(self, dictionary: dict[str, Any]) -> "Amenity":
         super().from_dict(dictionary)
-        self.name = dictionary.pop("name", None)
-        self.icon_url = dictionary.pop("icon_url", None)
+        self.name = dictionary.pop("name", self.name)
+        self.icon_url = dictionary.pop("icon_url", self.icon_url)
 
         return self.copy()
 

@@ -90,8 +90,8 @@ def get(
         "data": [
             {
                 "type": f"{result.get_class_name()}",
-                "id": result.id if isinstance(result, Model_ID) else None,
-                "attributes": result.to_dict(),
+                "id": (result_dict := result.to_dict()).pop("id", None),
+                "attributes": result_dict,
             }
             for result in results
         ],
@@ -193,8 +193,8 @@ def update_service(
     response_dict = {
         "data": {
             "type": f"{model.get_class_name()}",
-            "id": model.id if isinstance(model, Model_ID) else None,
-            "attributes": model.to_dict(ignore_none),
+            "id": (result_dict := model.to_dict(ignore_none)).pop("id", None),
+            "attributes": result_dict,
         },
     }
 

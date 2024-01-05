@@ -29,9 +29,9 @@ class Court(Model_Address_ID):
 
     def from_dict(self, dictionary: dict[str, Any]) -> "Court":
         super().from_dict(dictionary)
-        self.name = dictionary.pop("name", None)
-        self.description = dictionary.pop("description", None)
-        self.rating = dictionary.pop("rating", None)
+        self.name = dictionary.pop("name", self.name)
+        self.description = dictionary.pop("description", self.description)
+        self.rating = dictionary.pop("rating", self.rating)
 
         return self.copy()
 

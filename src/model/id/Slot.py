@@ -34,11 +34,15 @@ class Slot(Model_ID):
 
     def from_dict(self, dictionary: dict[str, Any]) -> "Slot":
         super().from_dict(dictionary)
-        self.reservation_datetime = dictionary.pop("reservation_datetime", None)
-        self.price = dictionary.pop("price", None)
-        self.cancellation_datetime = dictionary.pop("cancellation_datetime", None)
-        self.court_id = dictionary.pop("court_id", None)
-        self.user_id = dictionary.pop("user_id", None)
+        self.reservation_datetime = dictionary.pop(
+            "reservation_datetime", self.reservation_datetime
+        )
+        self.price = dictionary.pop("price", self.price)
+        self.cancellation_datetime = dictionary.pop(
+            "cancellation_datetime", self.cancellation_datetime
+        )
+        self.court_id = dictionary.pop("court_id", self.court_id)
+        self.user_id = dictionary.pop("user_id", self.user_id)
 
         return self.copy()
 

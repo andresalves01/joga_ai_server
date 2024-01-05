@@ -26,7 +26,7 @@ class Model(ABC):
         pass
 
     def generate_sql_insert(self) -> tuple[str, tuple[Any, ...]]:
-        self_dict = self.to_dict(shoud_ignore_none=True)
+        self_dict = self.to_dict(ignore_none=True)
         attributes = self_dict.keys()
 
         query = f"""INSERT INTO {self.get_table_name()} ({", ".join(attributes)})

@@ -34,8 +34,6 @@ class DAO:
         self.connect()
 
         query, data = model.generate_sql_insert()
-        print(query, data)
-
         try:
             self.cursor.execute(query, data)
 

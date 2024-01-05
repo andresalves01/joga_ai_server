@@ -27,9 +27,11 @@ class Photo(Model_ID):
 
     def from_dict(self, dictionary: dict[str, Any]) -> "Photo":
         super().from_dict(dictionary)
-        self.url = dictionary.pop("url", None)
-        self.court_id = dictionary.pop("court_id", None)
-        self.presentaton_order = dictionary.pop("presentation_order", None)
+        self.url = dictionary.pop("url", self.url)
+        self.court_id = dictionary.pop("court_id", self.court_id)
+        self.presentation_order = dictionary.pop(
+            "presentation_order", self.presentation_order
+        )
 
         return self.copy()
 

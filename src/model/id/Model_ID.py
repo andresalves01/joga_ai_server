@@ -9,7 +9,7 @@ class Model_ID(Model):
         self.id = id
 
     def from_dict(self, dictionary: dict[str, Any]) -> "Model_ID":
-        self.id = dictionary.pop("id", None)
+        self.id = dictionary.pop("id", self.id)
 
     def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         if self.id is None and ignore_none:

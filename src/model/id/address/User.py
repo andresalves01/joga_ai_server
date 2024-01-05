@@ -39,12 +39,12 @@ class User(Model_Address_ID):
 
     def from_dict(self, dictionary: dict[str, Any]) -> "User":
         super().from_dict(dictionary)
-        self.name = dictionary.pop("name", None)
-        self.email = dictionary.pop("email", None)
-        self.password = dictionary.pop("password", None)
-        self.ssn = dictionary.pop("ssn", None)
-        self.phone_number = dictionary.pop("phone_number", None)
-        self.profile_pic_url = dictionary.pop("profile_pic_url", None)
+        self.name = dictionary.pop("name", self.name)
+        self.email = dictionary.pop("email", self.email)
+        self.password = dictionary.pop("password", self.password)
+        self.ssn = dictionary.pop("ssn", self.ssn)
+        self.phone_number = dictionary.pop("phone_number", self.phone_number)
+        self.profile_pic_url = dictionary.pop("profile_pic_url", self.profile_pic_url)
 
         return self.copy()
 
