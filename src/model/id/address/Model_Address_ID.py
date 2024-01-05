@@ -11,10 +11,8 @@ class Model_Address_ID(Model_ID):
         super().from_dict(dictionary)
         self.address_id = dictionary.pop("address_id", None)
 
-    def to_dict(
-        self, ignore_none: bool = False, include_id: bool = False
-    ) -> dict[str, Any]:
-        super_to_dict = super().to_dict(ignore_none, include_id)
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
+        super_to_dict = super().to_dict(ignore_none)
         if ignore_none and self.address_id is None:
             return super_to_dict
 

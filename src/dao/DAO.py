@@ -16,8 +16,9 @@ class DAO:
         if self.is_connected:
             return
 
-        config_params = config()
+        config_params = " ".join(f"{key}={value}" for key, value in config().items())
         print("Connecting to PostgreSQL database ...")
+
         self.connection = pg.connect(config_params)
 
         self.cursor = self.connection.cursor(cursor_factory=pge.RealDictCursor)
@@ -25,19 +26,11 @@ class DAO:
         self.cursor.execute("SELECT version()")
 
         db_version = self.cursor.fetchone()
-        print(**db_version)
+        print(*db_version.values())
 
         self.is_connected = True
 
-    @overload
-    def create(self, model: Model) -> None:
-        ...
-
-    @overload
-    def create(self, model: Model_ID) -> int:
-        ...
-
-    def create(self, model: Model, commit_changes: bool) -> None | int:
+    def create(self, model: Model, commit_changes: bool = True) -> None | int:
         self.connect()
 
         query, data = model.generate_sql_insert()
@@ -89,32 +82,36 @@ class DAO:
     def update(
         self,
         model: Model,
-        commit_changes: bool,
         condition: str,
+        ignore_none: bool,
         condition_values: tuple[Any, ...] = None,
+        commit_changes: bool = True,
     ) -> None:
         ...
 
     @overload
-    def update(self, model: Model_ID, commit_changes: bool) -> None:
+    def update(
+        self, model: Model_ID, *, ignore_none: bool, commit_changes: bool = True
+    ) -> None:
         ...
 
     def update(
         self,
         model: Model,
-        commit_changes: bool,
         condition: str = None,
+        ignore_none: bool = True,
         condition_values: tuple[Any, ...] = None,
+        commit_changes: bool = True,
     ) -> None:
         self.connect()
 
         if isinstance(model, Model_ID) and condition is None:
-            query, data = model.generate_sql_update()
+            query, data = model.generate_sql_update(ignore_none=ignore_none)
         elif condition_values is not None:
-            query, data = model.generate_sql_update(condition)
+            query, data = model.generate_sql_update(condition, ignore_none)
             data += condition_values
         else:
-            query, data = model.generate_sql_update(condition)
+            query, data = model.generate_sql_update(condition, ignore_none)
 
         try:
             self.cursor.execute(query, data)
@@ -128,22 +125,22 @@ class DAO:
     def delete(
         self,
         model: Model,
-        commit_changes: bool,
         condition: str,
-        condition_values: tuple[Any, ...],
+        condition_values: tuple[Any, ...] = None,
+        commit_changes: bool = True,
     ) -> None:
         ...
 
     @overload
-    def delete(self, model: Model_ID, commit_changes: bool) -> None:
+    def delete(self, model: Model_ID, *, commit_changes: bool = True) -> None:
         ...
 
     def delete(
         self,
         model: Model,
-        commit_changes: bool,
         condition: str = None,
         condition_values: tuple[Any, ...] = None,
+        commit_changes: bool = True,
     ) -> None:
         self.connect()
 
@@ -164,18 +161,18 @@ class DAO:
             self.connection.rollback()
             raise error
 
-    def execute(self, command: str, values: tuple[Any, ...]):
-        return_data = None
-        try:
-            print(command, values)
-            self.cursor.execute(command, values)
-            self.connection.commit()
-            return_data = self.cursor.fetchall()
-        except (Exception, pg.DatabaseError) as error:
-            self.connection.rollback()
-            raise error
+    # def execute(self, command: str, values: tuple[Any, ...]):
+    #     return_data = None
+    #     try:
+    #         print(command, values)
+    #         self.cursor.execute(command, values)
+    #         self.connection.commit()
+    #         return_data = self.cursor.fetchall()
+    #     except (Exception, pg.DatabaseError) as error:
+    #         self.connection.rollback()
+    #         raise error
 
-        return return_data
+    #     return return_data
 
     def close(self) -> bool:
         if not self.is_connected:

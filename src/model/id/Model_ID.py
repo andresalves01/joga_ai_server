@@ -11,10 +11,8 @@ class Model_ID(Model):
     def from_dict(self, dictionary: dict[str, Any]) -> "Model_ID":
         self.id = dictionary.pop("id", None)
 
-    def to_dict(
-        self, ignore_none: bool = False, include_id: bool = False
-    ) -> dict[str, Any]:
-        if not include_id or (self.id is None and ignore_none):
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
+        if self.id is None and ignore_none:
             return {}
         return {"id": self.id}
 
@@ -37,27 +35,32 @@ class Model_ID(Model):
             raise ValueError("Condition and id can't both be None")
 
         if condition is not None:
-            return super().generate_sql_select(condition)
+            query = super().generate_sql_select(condition)
+            return query.replace("WHERE", f"id WHERE")
         else:
             return super().generate_sql_select("id = %s"), (self.id,)
 
     @overload
-    def generate_sql_update(self, condition: str) -> tuple[str, tuple[Any, ...]]:
+    def generate_sql_update(
+        self, condition: str, ignore_none: bool
+    ) -> tuple[str, tuple[Any, ...]]:
         ...
 
     @overload
-    def generate_sql_update(self) -> tuple[str, tuple[Any, ...]]:
+    def generate_sql_update(self, *, ignore_none: bool) -> tuple[str, tuple[Any, ...]]:
         ...
 
-    def generate_sql_update(self, condition: str = None) -> tuple[str, tuple[Any, ...]]:
+    def generate_sql_update(
+        self, condition: str = None, ignore_none: bool = False
+    ) -> tuple[str, tuple[Any, ...]]:
         if condition is None and self.id is None:
             raise ValueError("Condition and id can't both be None")
 
         if condition is None:
-            query, values = super().generate_sql_update("id = %s")
+            query, values = super().generate_sql_update("id = %s", ignore_none)
             return query, values + (self.id,)
         else:
-            return super().generate_sql_update(condition)
+            return super().generate_sql_update(condition, ignore_none)
 
     @overload
     def generate_sql_delete(self, condition: str) -> str:

@@ -38,8 +38,10 @@ class Model(ABC):
         return f"""SELECT {', '.join(self.to_dict().keys())} FROM {self.get_table_name()}
                     WHERE {condition};"""
 
-    def generate_sql_update(self, condition: str) -> tuple[str, tuple[Any, ...]]:
-        self_dict = self.to_dict()
+    def generate_sql_update(
+        self, condition: str, ignore_none: bool
+    ) -> tuple[str, tuple[Any, ...]]:
+        self_dict = self.to_dict(ignore_none)
         query = f"UPDATE {self.get_table_name()} SET {' = %s, '.join(self_dict.keys()) + ' = %s'} WHERE {condition};"
 
         return query, tuple(self_dict.values())

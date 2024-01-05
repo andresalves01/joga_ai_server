@@ -30,7 +30,6 @@ class User(Model_Address_ID):
             id=self.id,
             name=self.name,
             email=self.email,
-            id=self.id,
             password=self.password,
             ssn=self.ssn,
             phone_number=self.phone_number,
@@ -49,22 +48,17 @@ class User(Model_Address_ID):
 
         return self.copy()
 
-    def to_dict(
-        self, ignore_none: bool = False, include_id: bool = False
-    ) -> dict[str, Any]:
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         self_dict = {
-            "schema": self.schema,
-            "id": self.id,
             "name": self.name,
             "email": self.email,
-            "id": self.id,
             "password": self.password,
             "ssn": self.ssn,
             "phone_number": self.phone_number,
             "profile_pic_url": self.profile_pic_url,
         }
 
-        result = super().to_dict(ignore_none, include_id)
+        result = super().to_dict(ignore_none)
         if ignore_none:
             for key, value in self_dict.items():
                 if value is not None:

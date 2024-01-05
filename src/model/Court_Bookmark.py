@@ -20,8 +20,8 @@ class Court_Bookmark(Model):
 
     def from_dict(self, dictonary: dict[str, Any]) -> "Court_Bookmark":
         super().from_dict(dictonary)
-        self.user_id = dictonary.pop("user_id", None)
-        self.court_id = dictonary.pop("court_id", None)
+        self.user_id = dictonary.pop("user_id", self.user_id)
+        self.court_id = dictonary.pop("court_id", self.court_id)
 
         return self.copy()
 

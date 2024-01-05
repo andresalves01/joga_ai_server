@@ -20,8 +20,8 @@ class Court_has_Amenity(Model):
 
     def from_dict(self, dictonary: dict[str, Any]) -> "Court_has_Amenity":
         super().from_dict(dictonary)
-        self.amenity_id = dictonary.pop("amenity_id", None)
-        self.court_id = dictonary.pop("court_id", None)
+        self.amenity_id = dictonary.pop("amenity_id", self.amenity_id)
+        self.court_id = dictonary.pop("court_id", self.court_id)
 
         return self.copy()
 

@@ -28,10 +28,10 @@ class Court_Rating(Model):
 
     def from_dict(self, dictonary: dict[str, Any]) -> "Court_Rating":
         super().from_dict(dictonary)
-        self.user_id = dictonary.pop("user_id", None)
-        self.court_id = dictonary.pop("court_id", None)
-        self.rating = dictonary.pop("rating", None)
-        self.comment = dictonary.pop("comment", None)
+        self.user_id = dictonary.pop("user_id", self.user_id)
+        self.court_id = dictonary.pop("court_id", self.court_id)
+        self.rating = dictonary.pop("rating", self.rating)
+        self.comment = dictonary.pop("comment", self.comment)
 
         return self.copy()
 

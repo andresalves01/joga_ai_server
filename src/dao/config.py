@@ -1,7 +1,7 @@
 from configparser import ConfigParser, NoSectionError
 
 
-def config(filename="dao/database.ini", section="postgresql") -> dict[str, str]:
+def config(filename="src/dao/database.ini", section="postgresql") -> dict[str, str]:
     parser = ConfigParser()
     parser.read(filenames=filename)
 

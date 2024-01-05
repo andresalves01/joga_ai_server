@@ -35,16 +35,14 @@ class Court(Model_Address_ID):
 
         return self.copy()
 
-    def to_dict(
-        self, ignore_none: bool = False, include_id: bool = False
-    ) -> dict[str, Any]:
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         self_dict = {
             "name": self.name,
             "description": self.description,
             "rating": self.rating,
         }
 
-        result = super().to_dict(ignore_none, include_id)
+        result = super().to_dict(ignore_none)
         if ignore_none:
             for key, value in self_dict.items():
                 if value is not None:

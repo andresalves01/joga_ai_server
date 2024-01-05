@@ -33,9 +33,7 @@ class Photo(Model_ID):
 
         return self.copy()
 
-    def to_dict(
-        self, ignore_none: bool = False, include_id: bool = False
-    ) -> dict[str, Any]:
+    def to_dict(self, ignore_none: bool = False) -> dict[str, Any]:
         self_dict = {
             "url": self.url,
             "court_id": self.court_id,

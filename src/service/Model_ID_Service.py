@@ -189,7 +189,7 @@ def get_related_models(referenced: Model_ID, dependent: Model_ID, dao: DAO):
                 ] = referenced.attributes_to_dict()
 
                 print(dependent_json)
-                results.append(dependent_json)
+                resultsappend(dependent_json)
 
             response = jsonify(results)
             response.status = 200
